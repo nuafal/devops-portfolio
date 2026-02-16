@@ -1,44 +1,44 @@
-from flask import Flask, render_template_string
+import time
 import redis
-import os
 import socket
 import datetime
+from flask import Flask, render_template_string
 
 app = Flask(__name__)
+cache = redis.Redis(host='redis', port=6379)
 
-# CONNECT TO REDIS
-redis_host = os.getenv('REDIS_HOST', 'redis-service')
-cache = redis.Redis(host=redis_host, port=6379)
-
-# THE DASHBOARD HTML (Now inside Python!)
+# ---------------------------------------------------
+#  HTML TEMPLATE (The User Interface)
+# ---------------------------------------------------
 HTML_TEMPLATE = """
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevOps Master | Naufal</title>
+    <title>My DevOps Project</title>
     <style>
-        body { background-color: #0f172a; color: #f8fafc; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background-color: #1e293b; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); width: 350px; text-align: center; border: 1px solid #334155; }
-        .metric { font-size: 4rem; font-weight: bold; color: #22c55e; margin: 1rem 0; text-shadow: 0 0 20px rgba(34,197,94,0.5); }
-        .label { color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.8rem; }
-        .footer { margin-top: 1.5rem; font-size: 0.7rem; color: #64748b; }
-        .pod-id { color: #f59e0b; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background-color: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; width: 400px; }
+        h1 { color: #007bff; margin-bottom: 10px; }
+        .counter { font-size: 64px; font-weight: bold; color: #333; margin: 20px 0; }
+        .footer { color: #666; font-size: 14px; margin-top: 20px; }
+        .tag { background-color: #28a745; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="label">Total Visitors (Redis)</div>
-        <div class="metric">{{ count }}</div>
-        <div class="label">Served By Pod</div>
+    <div class="container">
+        <h1>🚀 Version 2: CI/CD Live!</h1>
+        <p>This page was updated automatically by GitHub Actions.</p>
+        
+        <div class="counter">{{ count }}</div>
+        <p>Total Visits</p>
+        
         <div class="footer">
-            ID: <span class="pod-id">{{ hostname }}</span><br>
-            Time: {{ time }}
+            Served by Container ID: <br>
+            <code>{{ hostname }}</code>
         </div>
     </div>
+
     <script>
-        // Auto-refresh every 2 seconds to see load balancing!
         setTimeout(() => window.location.reload(), 2000);
     </script>
 </body>
@@ -54,13 +54,17 @@ def get_hit_count():
             if retries == 0:
                 raise exc
             retries -= 1
+            time.sleep(0.5)
 
 @app.route('/')
 def hello():
-    count = get_hit_count()
+    try:
+        count = get_hit_count()
+    except:
+        count = "Redis Offline"
+        
     hostname = socket.gethostname()
-    now = datetime.datetime.now().strftime("%H:%M:%S")
-    return render_template_string(HTML_TEMPLATE, count=count, hostname=hostname, time=now)
+    return render_template_string(HTML_TEMPLATE, count=count, hostname=hostname)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
