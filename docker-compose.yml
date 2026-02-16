@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  # Service 1: The Database
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  # Service 2: Your Python App
+  web:
+    image: naufallofty/my-python-app:latest  # <--- Make sure this is YOUR Docker Hub username
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+    depends_on:
+      - redis  # This tells Docker: "Wait for Redis to start first"
