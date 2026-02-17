@@ -47,5 +47,11 @@ This project includes a CI/CD pipeline. Every push to the `main` branch triggers
 2.  **Push:** Uploads the image to Docker Hub (`naufallofty/my-python-app`).
 3.  **Deploy:** The AWS instance pulls the latest image and updates the live container.
 
+## 📊 Observability
+Integrated a monitoring stack to track system health and performance.
+* **Prometheus:** Scrapes metrics from the containerized services.
+* **Grafana:** Visualizes time-series data (e.g., memory usage, request counts).
+
+![Monitoring Dashboard](./monitoring.png)
 ---
 *Built as part of the 7-Day DevOps Challenge.*
