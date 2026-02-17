@@ -16,7 +16,6 @@ A scalable, containerized web application deployed on AWS using Docker, Kubernet
 * **CI/CD:** GitHub Actions (Automated build & push to Docker Hub).
 
 ## 📸 Screenshots
-*(Place your screenshot of the "Version 2: CI/CD Live!" page here)*
 ![App Screenshot](./screenshot.png)
 
 ## 🛠️ Tech Stack
